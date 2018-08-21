@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="utf-8" />
+	<title>StartHtml</title>
+	<meta name="description" content="" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="shortcut icon" href="favicon.png" />
+	<link rel="stylesheet" href="libs/bootstrap-grid/bootstrap-grid.css" />
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">	
+	<link href="css/font-awesome.min.css" rel="stylesheet">	
+	<link rel="stylesheet" href="css/fonts.css" />
+	<link rel="stylesheet" href="css/main.css" />
+	<link rel="stylesheet" href="css/media.css" />
+</head>
+<body>	
+		<h1 id="logo">Клавиатурный тренажер<br><span>Falling Letters</span></h1>
+		
+		<div id="startOverley">			
+			<button id="start">Start</button>
+			<p id="speed">Уровень сложности</p>
+			<div id="btnOverley">
+				<span id="speedMinus"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+				<span id="numSpeed"></span>
+				<span id="speedPlus"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span><br>
+				<span id="textRu">RU</span>
+				<span id="textEn">EN</span>
+				<span id="textUA">UA</span>
+			</div>
+		</div>
+		
+		<div class="container">
+			<div class="row">
+				
+				<div id="bodyGame">				
+					<div class="container">
+						<div class="row">
+		
+							<div class="col-md-3"></div>
+
+							<div class="col-md-6">				
+								<div id="keyOwerley">								
+									<span id="key"></span>
+																	
+
+									<div id="textes">
+									<p id="textForTraining">123456</p>	
+										<p id="textForTraining">Чушь: гид вёз кэб цапф, юный жмот съел хрящ. Быстрая коричневая лисица перепрыгнула через ленивую собаку.	Буквопечатающей связи нужны хорошие э/магнитные реле. Дать цифры (1234567890+-,:?-). Съешь ещё этих мягких французских булок да выпей же чаю. Экс-граф? Плюш изъят. Бьём чуждый цен хвощ!</p>								
+										<p id="textForTraining2">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. A bird in the hand is worth two in the bush.	Don't count your chickens before they are hatched.o</p>					
+										<p id="textForTraining3">Чуєш їх, доцю, га? Кумедна ж ти, прощайся без ґольфів!	Єхидна, ґава, їжак ще й шиплячі плазуни бігцем форсують Янцзи. Жебракують філософи при ґанку церкви в Гадячі, ще й шатро їхнє п’яне знаємо.	Гей, хлопці, не вспію — на ґанку ваша файна їжа знищується бурундучком.</p>				
+									</div>
+ 									<div id="bottonLine">
+										<p id='keyP'><strong>↓</strong><br><span id="preText"></span></p>
+											<div id="resultGame">
+												<div class="row">
+													<div class="col-md-4">
+														<p>Поймано звезд<br><span id="allkilld">0</span></p>
+													</div>
+													<div class="col-md-4">
+														<p id="failP">Промахи<br><span id="fail">0</span></p>														
+													</div>
+													<div class="col-md-4">
+														<p>Всего кликнуто<br><span id="clicks">0</span></p>
+													</div>
+												</div>
+											</div>
+									</div>	
+									
+								</div>
+
+								<p id="tapP">нажата<br>↓<br><span id="tap"></span></p>	
+								<div id="btns">
+									<button id="win"><i class="fa fa-refresh" aria-hidden="true"></i></button>								
+								</div>			
+							</div>
+
+							<div class="col-md-3"></div>
+		
+						</div>
+					</div>			
+							
+				</div> <!-- end body game	 -->
+		
+				<span id="fullWindow"><i class="fa fa-arrows-alt" aria-hidden="true"></i></span>
+				<span id="sound_btn"><i class="fa fa-volume-up" aria-hidden="true"></i></span>								
+			 	<p id="timer">время<br><span id="timeMin"> 0 </span> мин <span id="timeSec"> 0 </span> сек</p>
+				<p id="copy"><a href="http://alexandrsemak.ru/" target="blank">alexandrsemak.ru</a><br>Copyright © 2017 Александр Семак </p>
+
+			</div>
+		</div>
+	
+	<script src="libs/jquery/jquery.min.js"></script>
+<!-- 	<script src="js/common.js"></script>
+	<script src="js/game.js"></script> -->
+<!-- 	<script src="js/gameV2.js"></script> -->
+	<script src="js/gameV3.js"></script>
+	
+
+
+</body>
+</html>
