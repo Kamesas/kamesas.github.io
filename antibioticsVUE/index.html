@@ -1,204 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="initial-scale=1, maximum-scale=1">
-	<title>Antibiotics</title>
-	<link rel="stylesheet" href="css//bootstrap.min.css">
-	<link rel="stylesheet" href="css/bootstrap-grid.min.css">
-  <link rel="stylesheet" href="css/font-awesome.min.css">
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/vue.js"></script> 
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+    <title>Antibiotics</title>
+    <link rel="stylesheet" href="css//bootstrap.min.css" />
+    <link rel="stylesheet" href="css/bootstrap-grid.min.css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/vue.js"></script>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <select v-model="selected" class="form-control form-control-md">
+        <option v-for="item in antibiotics" :value="item" :key="item.id">
+          {{ item.name }}
+        </option>
+      </select>
 
-	<div id="app" class="container">	  
+      <h2 class="text-center">{{ selected.name }}</h2>
+      <div class="font-weight-bold text-center font-monospace">
+        {{ selected.mg24 }} мг/кг/сут
+      </div>
 
-	  	<select v-model="selected" class="form-control form-control-md">
-	  	  <option v-for="item in antibiotics" :value="item" :key="item.id">
-	  	    {{ item.name }}
-	  	  </option>
-	  	</select>
-	  	
-	  	<h2 class="text-center">{{ selected.name }}</h2>
-	  	<div class="font-weight-bold text-center font-monospace">{{ selected.mg24 }} мг/кг/сут</div>
-	  	
-	  	<div class="row">
-	  		<div class="col-md"><input type="text" v-model="weight"  class="form-control form-control-md" placeholder="введите вес">
-	  			{{weight_mg24()}}
-	  		</div>
-	  		<div class="col-md">
-	  			<div v-if="mg24 !== 0">{{ mg24 }} мг/сут</div>
-	  		</div>
-	  	</div>
-	  	
-		<div class="row justify-content-center">	
+      <div class="row">
+        <div class="col-md">
+          <input
+            type="text"
+            v-model="weight"
+            class="form-control form-control-md"
+            placeholder="введите вес"
+            @keypress="isNumber($event)"
+          />
+          {{ weight_mg24() }}
+        </div>
+        <div class="col-md">
+          <div v-if="mg24 !== 0">{{ mg24 }} мг/сут</div>
+        </div>
+      </div>
 
-			<div class="col-md-6">
-				<h5 class="border-bottom border-success">
-					{{ selected.dose }} <span v-if="this.selected.extraDose">мг/{{ selected.extraDose }}</span> мг в 5мл 
-					({{ selected.volumBottle }}
-					<span v-if="this.selected.volumBottleBig"> ({{ selected.volumBottleBig }})</span> мл/фл)
-				</h5>
-				<div v-if="mg24 !== 0">
-				  <div>{{ ml24 }} мл/сут</div>	
-				  <div>{{ ml24Dose }} </div>
-				  <div>флакона на {{ (selected.volumBottle/ml24).toFixed(1) }} дней</div>
-				  <div v-if="this.selected.volumBottleBig && mg24 !== 0">
-			  			флакона на {{ (selected.volumBottleBig/ml24).toFixed(1) }} дней
-			  	</div>
-				</div>	  	
-			</div>			
-			
-			<div class="col-md-6" v-if="this.selected.doseBig">
-				<h5 class="border-bottom border-success">
-					{{ selected.doseBig }} <span v-if="this.selected.extraDose">мг/{{ selected.extraDoseBig }}</span> мг в 5мл 
-					({{ selected.volumBottle }}мл/фл)
-				</h5>	  	
-		  	<div v-if="this.selected.doseBig && mg24 !== 0">
-		  		<div>{{ ml24Big }} мл/сут</div>	  
-		  		<div>{{ ml24BigDose }} </div>
-		  		<div>флакона на {{ (selected.volumBottle/ml24Big).toFixed(1) }} дней</div>
-		  	</div>
-			</div>
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <h5 class="border-bottom border-success">
+            {{ selected.dose }}
+            <span v-if="this.selected.extraDose"
+              >мг/{{ selected.extraDose }}</span
+            >
+            мг в 5мл ({{ selected.volumBottle }}
+            <span v-if="this.selected.volumBottleBig">
+              ({{ selected.volumBottleBig }})</span
+            >
+            мл/фл)
+          </h5>
+          <div v-if="mg24 !== 0">
+            <div>{{ ml24 }} мл/сут</div>
+            <div>{{ ml24Dose }}</div>
+            <div>
+              флакона на {{ (selected.volumBottle / ml24).toFixed(1) }} дней
+            </div>
+            <div v-if="this.selected.volumBottleBig && mg24 !== 0">
+              флакона на {{ (selected.volumBottleBig / ml24).toFixed(1) }} дней
+            </div>
+          </div>
+        </div>
 
-	  </div>
-	</div>
-	
-	<script>		
+        <div class="col-md-6" v-if="this.selected.doseBig">
+          <h5 class="border-bottom border-success">
+            {{ selected.doseBig }}
+            <span v-if="this.selected.extraDose"
+              >мг/{{ selected.extraDoseBig }}</span
+            >
+            мг в 5мл ({{ selected.volumBottle }}мл/фл)
+          </h5>
+          <div v-if="this.selected.doseBig && mg24 !== 0">
+            <div>{{ ml24Big }} мл/сут</div>
+            <div>{{ ml24BigDose }}</div>
+            <div>
+              флакона на {{ (selected.volumBottle / ml24Big).toFixed(1) }} дней
+            </div>
+          </div>
+        </div>
 
-		var vm = new Vue({
-		  el: '#app',
-		  data: {
-		    antibiotics: [
-		      {
-						id: 1,
-						name: 'Амоксициллин (Оспамокс)',						
-						mg24: 45,
-						dose: 125,
-						doseBig: 250,
-						volumBottle: 60,
-						timesAday: [2, 'два раза в сутки']						
-					},					
-					{
-						id: 2,
-						name: 'Амоксициллин клавуланат (Аугментин)',						
-						mg24: 45,
-						dose: 200,
-						extraDose: 28.5,
-						doseBig: 400,
-						extraDoseBig: 57,
-						volumBottle: 70,						
-						timesAday: [2, 'два раза в сутки']												
-					},
-					{
-						id: 3,
-						name: 'Амоксициллин клавунат (Амоксиклав)',						
-						mg24: 45,
-						dose: 125,
-						extraDose: 31.25,
-						doseBig: 250,
-						extraDoseBig: 62.5,
-						volumBottle: 100,	
-						//volumBottleBig: 70,					
-						timesAday: [3, 'три раза в сутки']															
-					},
-					{
-						id: 4,
-						name: 'Цефподоксим (Цефодокс)',						
-						mg24: 10,
-						dose: 50,
-						doseBig: 100,
-						volumBottle: 50,
-						timesAday: [2, 'два раза в сутки']												
-					},
-					{
-						id: 5,
-						name: 'Цефподоксим (Цедоксим)',						
-						mg24: 8,
-						dose: 40,						
-						volumBottle: 100,
-						timesAday: [2, 'два раза в сутки']												
-					},
-					{
-						id: 6,
-						name: 'Цефиксим (Цефикс)',
-						mg24: 8,
-						dose: 100,
-						volumBottle: 30,
-						volumBottleBig: 60,
-						timesAday: [1, 'один раз в сутки']				
-					},
-					{
-						id: 7,
-						name: 'Цефуроксим (Зиннат)',
-						mg24: 20,
-						dose: 125,
-						volumBottle: 100,						
-						timesAday: [2, 'два раза в сутки']				
-					},
-					// {
-					// 	id: 8,
-					// 	name: 'Азитромицин (Сумамед)',
-					// 	mg24: 10,
-					// 	dose: 100,
-					// 	doseBig: 200,
-					// 	volumBottle: 15,
-					// 	volumBottleBig: 37,						
-					// 	timesAday: [1, 'один раз в сутки']				
-					// },
-					{
-						id: 9,
-						name: 'Азитромицин (АзитроСАНДОЗ)',
-						mg24: 10,
-						dose: 100,
-						doseBig: 200,
-						volumBottle: 20,						
-						timesAday: [1, 'один раз в сутки']				
-					},
-		    ],
-		    selected: null,
-		    weight: null,	
-		    mg24: null,
-		    ml24: null,
-		    ml24Big: null,
-		    ml24Dose: null,
-		    ml24BigDose: null,	    
-		  },
-		  methods: {				
-		  	weight_mg24() {					
-					
-						this.mg24 = this.weight * this.selected.mg24;
-						this.ml_24();
-				
-				},				
-				ml_24() {
-					if (this.selected.dose && this.selected.doseBig) {						
-						return (
+        <div class="row headigPills">
+          <strong>Таблетки</strong>
+        </div>
 
-							this.ml24 = (5 * this.mg24 / this.selected.dose).toFixed(1),
-							this.ml24Dose = (this.ml24 /this.selected.timesAday[0]).toFixed(1) + " мл" + ' - ' +this.selected.timesAday[1] ,
+        <div class="row  pills">
+          <div
+            class="col-md-6"
+            class="pill"
+            v-if="this.selected.pills ? this.selected.pills : null"
+          >
+            {{ selected.pills.year }} {{ selected.pills.dose }}
+          </div>
 
-							this.ml24Big = (5 * this.mg24 / this.selected.doseBig).toFixed(1),
-							this.ml24BigDose = (this.ml24Big /this.selected.timesAday[0]).toFixed(1) + " мл" + ' - ' +this.selected.timesAday[1]
+          <div
+            class="col-md-6"
+            class="pill"
+            v-if="this.selected.pills ? this.selected.pills : null"
+          >
+            {{ selected.pills.year2 }} {{ selected.pills.dose2 }}
+          </div>
+        </div>
+      </div>
+    </div>
 
-						)									
-					}														
-					if ( this.selected.dose) {
-						return (
-							this.ml24 = (5 * this.mg24 / this.selected.dose).toFixed(1),
-							this.ml24Dose = (this.ml24 /this.selected.timesAday[0]).toFixed(1) + " мл" + ' - ' +this.selected.timesAday[1]
-							)
-					}
-													
-				},
-			},			
-		  created: function() {
-		    	this.selected = this.antibiotics.find(i => 
-		    		i.id || i.mlBig || i.mg24 === this.selected);		    	
-		  }
-		});
-
-	</script>
-</body>
+    <script>
+      var vm = new Vue({
+        el: "#app",
+        data: {
+          antibiotics: [
+            {
+              id: 1,
+              name: "Амоксициллин (Оспамокс)",
+              mg24: 45,
+              dose: 125,
+              doseBig: 250,
+              volumBottle: 60,
+              timesAday: [2, "два раза в сутки"],
+              pills: {
+                year: "С 6 лет ",
+                year2: "С 12 лет ",
+                dose: "500мг 3 раза (12 таб/уп)",
+                dose2: "1000мг 2 раза (6 таб/уп)"
+              }
+            },
+            {
+              id: 2,
+              name: "Амоксициллин клавуланат (Аугментин)",
+              mg24: 45,
+              dose: 200,
+              extraDose: 28.5,
+              doseBig: 400,
+              extraDoseBig: 57,
+              volumBottle: 70,
+              timesAday: [2, "два раза в сутки"],
+              pills: {
+                year: "С 6 лет ",
+                year2: "С 12 лет ",
+                dose: "500/125мг 3 раза (14 таб/уп)",
+                dose2: "875/125мг 2 раза (14 таб/уп)"
+              }
+            },
+            {
+              id: 3,
+              name: "Амоксициллин клавунат (Амоксиклав)",
+              mg24: 45,
+              dose: 125,
+              extraDose: 31.25,
+              doseBig: 250,
+              extraDoseBig: 62.5,
+              volumBottle: 100,
+              //volumBottleBig: 70,
+              timesAday: [3, "три раза в сутки"],
+              pills: {
+                year: "С 6 лет ",
+                year2: "С 12 лет ",
+                dose: "500/125мг 3 раза (14 таб/уп)",
+                dose2: "875/125мг 2 раза (14 таб/уп)"
+              }
+            },
+            {
+              id: 4,
+              name: "Цефподоксим (Цефодокс)",
+              mg24: 10,
+              dose: 50,
+              doseBig: 100,
+              volumBottle: 50,
+              timesAday: [2, "два раза в сутки"],
+              pills: {
+                year: "С 6 лет ",
+                year2: "С 12 лет ",
+                dose: "100мг 2 раза (10 таб/уп)",
+                dose2: "200мг 2 раза (10 таб/уп)"
+              }
+            },
+            {
+              id: 5,
+              name: "Цефподоксим (Цедоксим)",
+              mg24: 8,
+              dose: 40,
+              volumBottle: 100,
+              timesAday: [2, "два раза в сутки"],
+              pills: {
+                year: "С 6 лет ",
+                year2: "С 12 лет ",
+                dose: "100мг 2 раза (10 таб/уп)",
+                dose2: "200мг 2 раза (10 таб/уп)"
+              }
+            },
+            {
+              id: 6,
+              name: "Цефиксим (Цефикс)",
+              mg24: 8,
+              dose: 100,
+              volumBottle: 30,
+              volumBottleBig: 60,
+              timesAday: [1, "один раз в сутки"],
+              pills: {
+                year: "С 12 лет ",
+                dose: "400мг 1 раз (1 капс/уп)"
+              }
+            },
+            {
+              id: 7,
+              name: "Цефуроксим (Зиннат)",
+              mg24: 20,
+              dose: 125,
+              volumBottle: 100,
+              timesAday: [2, "два раза в сутки"],
+              pills: {
+                year: "С 4 лет ",
+                year2: "С 12 лет ",
+                dose: "250мг 2 раза (10 таб/уп)",
+                dose2: "500мг 2 раза (10 таб/уп)"
+              }
+            },
+            // {
+            // 	id: 8,
+            // 	name: 'Азитромицин (test)',
+            // 	mg24: 5,
+            // 	dose: 50,
+            // 	doseBig: 100,
+            // 	volumBottle: 15,
+            // 	volumBottleBig: 37,
+            // 	timesAday: [1, 'один раз в сутки']
+            // },
+            {
+              id: 9,
+              name: "Азитромицин (АзитроСАНДОЗ)",
+              mg24: 10,
+              dose: 100,
+              doseBig: 200,
+              volumBottle: 20,
+              timesAday: [1, "один раз в сутки"],
+              pills: {
+                year: "С 6 лет ",
+                year2: "С 12 лет ",
+                dose: "250мг 1 раза (6 таб/уп)",
+                dose2: "500мг 1 раза (3 таб/уп)"
+              }
+            }
+          ],
+          selected: null,
+          weight: null,
+          mg24: null,
+          ml24: null,
+          ml24Big: null,
+          ml24Dose: null,
+          ml24BigDose: null
+        },
+        methods: {
+          isNumber: function(evt) {
+            evt = evt ? evt : window.event;
+            var charCode = evt.which ? evt.which : evt.keyCode;
+            if (
+              charCode > 31 &&
+              (charCode < 48 || charCode > 57) &&
+              charCode !== 46
+            ) {
+              evt.preventDefault();
+            } else {
+              return true;
+            }
+          },
+          weight_mg24() {
+            this.mg24 = this.weight * this.selected.mg24;
+            this.ml_24();
+          },
+          ml_24() {
+            if (this.selected.dose && this.selected.doseBig) {
+              return (
+                (this.ml24 = ((5 * this.mg24) / this.selected.dose).toFixed(1)),
+                (this.ml24Dose =
+                  (this.ml24 / this.selected.timesAday[0]).toFixed(1) +
+                  " мл" +
+                  " - " +
+                  this.selected.timesAday[1]),
+                (this.ml24Big = (
+                  (5 * this.mg24) /
+                  this.selected.doseBig
+                ).toFixed(1)),
+                (this.ml24BigDose =
+                  (this.ml24Big / this.selected.timesAday[0]).toFixed(1) +
+                  " мл" +
+                  " - " +
+                  this.selected.timesAday[1])
+              );
+            }
+            if (this.selected.dose) {
+              return (
+                (this.ml24 = ((5 * this.mg24) / this.selected.dose).toFixed(1)),
+                (this.ml24Dose =
+                  (this.ml24 / this.selected.timesAday[0]).toFixed(1) +
+                  " мл" +
+                  " - " +
+                  this.selected.timesAday[1])
+              );
+            }
+          }
+        },
+        created: function() {
+          this.selected = this.antibiotics.find(
+            i => i.id || i.mlBig || i.mg24 === this.selected
+          );
+        }
+      });
+    </script>
+  </body>
 </html>
