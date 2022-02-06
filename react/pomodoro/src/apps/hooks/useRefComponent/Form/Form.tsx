@@ -8,12 +8,10 @@ interface iFormProps {
 export const Form: FC<iFormProps> = () => {
   const { value, errors, isValid, inputRef, onChangeHandler, onBlurHandler } =
     useInput({
-      // defaultValue: "123",
-      // filters: ["onlyDigits"],
+      defaultValue: "123",
+      filters: ["onlyLetters"],
       validators: { email: {} },
     });
-
-  console.log("value Form", value, errors);
 
   const submitHandler = (e: FormEvent) => {
     e.preventDefault();
@@ -23,7 +21,8 @@ export const Form: FC<iFormProps> = () => {
   return (
     <form>
       <h1>Form with uncontrolled inputs</h1>
-      <label htmlFor="inputId">{isValid ? "Label" : "Error"}</label>
+
+      <label htmlFor="inputId">{"Label"}</label>
       <input
         id="inputId"
         type="text"
@@ -33,8 +32,14 @@ export const Form: FC<iFormProps> = () => {
       />
 
       <button onClick={submitHandler} type="submit">
-        submit
+        {isValid ? "Valid" : "NOT valid !!!"}
       </button>
+
+      {!isValid && (
+        <div style={{ color: "red", marginTop: "1rem" }}>
+          Error: {errors?.[0]}
+        </div>
+      )}
     </form>
   );
 };

@@ -11,7 +11,7 @@ type inputProps = {
 export const useInput = ({ defaultValue, filters, validators }: inputProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isValid, setIsValid] = useState(true);
-  const [errors, setErrors] = useState<Array<string>>();
+  const [errors, setErrors] = useState<Array<string>>([]);
   const [wasOnblur, setOnblur] = useState(false);
   const [wasUserChanges, setUserChanges] = useState(false);
 
@@ -19,31 +19,39 @@ export const useInput = ({ defaultValue, filters, validators }: inputProps) => {
     defaultValue && setValueByForce(defaultValue);
   }, [defaultValue]);
 
-  function setValueByForce(defaultValue: string) {
-    if (inputRef.current) inputRef.current.value = defaultValue;
-  }
-
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!inputRef.current) return;
     setUserChanges(true);
 
-    if (filters?.length) {
-      const filteredValue = inputFilterValue({ filters, value: e.target.value });
-      inputRef.current.value = filteredValue;
-    };
-
-    if (validators) {
-      const isValidInputObj = isValidInput({ value: e.target.value, validators });
-      setIsValid(isValidInputObj.isValid);
-      // setErrors(isValidInputObj.errorsTypes)
-      console.log('isValid onChange', isValidInputObj);
-
-    }
+    checkFilters(e.target.value);
+    wasOnblur && checkValidation(e.target.value);
   }
 
   const onBlurHandler = () => {
-    console.log('onBlurHandler', inputRef.current?.value);
     setOnblur(true);
+
+    if (!wasOnblur && inputRef.current) {
+      checkFilters(inputRef.current?.value)
+      checkValidation(inputRef.current?.value);
+    }
+  }
+
+  function setValueByForce(defaultValue: string) {
+    if (inputRef.current) inputRef.current.value = defaultValue;
+  }
+
+  const checkFilters = (value: string) => {
+    if (!inputRef.current || !filters?.length) return;
+    const filteredValue = inputFilterValue({ filters, value });
+    inputRef.current.value = filteredValue;
+  }
+
+  const checkValidation = (value: string) => {
+    if (validators) {
+      const isValidInputObj = isValidInput({ value, validators });
+      setIsValid(isValidInputObj.isValid);
+      if (!equalsArrayIgnoreOrder(errors, isValidInputObj.errorsTypes)) setErrors([...isValidInputObj.errorsTypes]);
+    }
   }
 
   return {
@@ -57,4 +65,15 @@ export const useInput = ({ defaultValue, filters, validators }: inputProps) => {
     onBlurHandler,
     setValueByForce
   };
+}
+
+function equalsArrayIgnoreOrder<T, U>(a: Array<T>, b: Array<U>) {
+  if (a.length !== b.length) return false;
+  const uniqueValues = Array.from(new Set([...a, ...b]));
+  for (const v of uniqueValues) {
+    const aCount = a.filter(e => e === v).length;
+    const bCount = b.filter(e => e === v).length;
+    if (aCount !== bCount) return false;
+  }
+  return true;
 }
