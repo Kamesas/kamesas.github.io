@@ -1,14 +1,8 @@
-export const validatorName = {
-  email: 'email',
-  userName: 'userName'
-} as const;
-
-type validator = { errMsg?: string | null; successMsg?: string | null; };
-export type tValidators = Partial<Record<keyof typeof validatorName, validator>>;
+export type validatorName = 'email' | 'userName' | "equalTo";
 
 type tIsValidInput = {
   value: string
-  validators?: tValidators
+  validators?: Array<validatorName>,
 }
 
 export const isValidInput = ({ value, validators }: tIsValidInput) => {
@@ -17,18 +11,29 @@ export const isValidInput = ({ value, validators }: tIsValidInput) => {
   let isValid = false;
   const errorsTypes: Array<string> = [];
 
-  for (const validator in validators) {
-    if (validator === validatorName.email) {
+  for (const validator of validators) {
+    if (validator === "email") {
       const re = new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-      isValid = re.test(value);
-      !isValid && errorsTypes.push(validatorName.email);
-      isValid && errorsTypes.filter(item => item !== validatorName.email);
+      isValid = !value ? true : re.test(value); //if value is empty set valid 
+      setErrorTypes("email");
     }
-    if (validator === validatorName.userName) {
+    if (validator === "equalTo") {
+      console.log('equal To');
+
       // const lettersRx = new RegExp(/[^\p{L}'`\s-]+/gmu);
       // const twoSpacesRx = new RegExp(/\s\s+/gm);
       // return !lettersRx.test(v) && !twoSpacesRx.test(v);
     }
+    if (validator === "userName") {
+      // const lettersRx = new RegExp(/[^\p{L}'`\s-]+/gmu);
+      // const twoSpacesRx = new RegExp(/\s\s+/gm);
+      // return !lettersRx.test(v) && !twoSpacesRx.test(v);
+    }
+  }
+
+  function setErrorTypes(typeErr: validatorName) {
+    !isValid && errorsTypes.push(typeErr);
+    isValid && errorsTypes.filter(item => item !== typeErr);
   }
 
   return { isValid, errorsTypes };

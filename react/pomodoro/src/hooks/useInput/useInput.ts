@@ -1,69 +1,77 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { filtersName, inputFilterValue } from './inputFilterValue';
-import { tValidators, isValidInput } from './isValidInput';
+import { isValidInput, validatorName } from './isValidInput';
 
 type inputProps = {
   defaultValue?: string;
   filters?: Array<filtersName>;
-  validators?: tValidators;
+  validators?: Array<validatorName>;
+  startValidationWhenInit?: ['validation' | 'filtering'];
 }
 
-export const useInput = ({ defaultValue, filters, validators }: inputProps) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+export type returnUseInput = ReturnType<typeof useInput>;
+
+export const useInput = (props?: inputProps) => {
+  const ref = useRef<HTMLInputElement | null>(null);
   const [isValid, setIsValid] = useState(true);
   const [errors, setErrors] = useState<Array<string>>([]);
   const [wasOnblur, setOnblur] = useState(false);
-  const [wasUserChanges, setUserChanges] = useState(false);
 
   useEffect(() => {
-    defaultValue && setValueByForce(defaultValue);
-  }, [defaultValue]);
+    if (!props?.defaultValue) return;
+    setValueByForce(props?.defaultValue);
+    checkValidationWhenInit(props?.defaultValue);
+  }, [props?.defaultValue]); // eslint-disable-line
 
-  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!inputRef.current) return;
-    setUserChanges(true);
-
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     checkFilters(e.target.value);
     wasOnblur && checkValidation(e.target.value);
   }
 
-  const onBlurHandler = () => {
+  const onBlur = () => {
     setOnblur(true);
 
-    if (!wasOnblur && inputRef.current) {
-      checkFilters(inputRef.current?.value)
-      checkValidation(inputRef.current?.value);
-    }
+    if (wasOnblur || !ref.current) return;
+    checkFilters(ref.current?.value)
+    checkValidation(ref.current?.value);
   }
 
-  function setValueByForce(defaultValue: string) {
-    if (inputRef.current) inputRef.current.value = defaultValue;
+  const setValueByForce = (value: string) => {
+    ref.current && (ref.current.value = value);
   }
 
   const checkFilters = (value: string) => {
-    if (!inputRef.current || !filters?.length) return;
-    const filteredValue = inputFilterValue({ filters, value });
-    inputRef.current.value = filteredValue;
+    if (!ref.current || !props?.filters?.length) return;
+    ref.current.value = inputFilterValue({ filters: props?.filters, value })
   }
 
   const checkValidation = (value: string) => {
-    if (validators) {
-      const isValidInputObj = isValidInput({ value, validators });
-      setIsValid(isValidInputObj.isValid);
-      if (!equalsArrayIgnoreOrder(errors, isValidInputObj.errorsTypes)) setErrors([...isValidInputObj.errorsTypes]);
-    }
+    if (!props?.validators?.length) return;
+    const { isValid, errorsTypes } = isValidInput({ value, validators: props?.validators });
+    !equalsArrayIgnoreOrder(errors, errorsTypes) && setErrors([...errorsTypes]);
+    setIsValid(isValid);
+  }
+
+  const checkValidationWhenInit = (defaultValue: string) => {
+    if (!props?.startValidationWhenInit?.length) return;
+    setOnblur(true);
+    props?.startValidationWhenInit?.includes('validation') && checkValidation(defaultValue);
+    props?.startValidationWhenInit?.includes('filtering') && checkFilters(defaultValue);
   }
 
   return {
-    inputRef,
-    value: inputRef.current?.value,
-    isValid: isValid,
     errors,
+    isValid,
+    value: ref.current?.value,
+    setValueByForce,
+    setIsValid,
+    setErrors,
     wasOnblur,
-    wasUserChanges,
-    onChangeHandler,
-    onBlurHandler,
-    setValueByForce
+    inputAttr: {
+      ref,
+      onBlur,
+      onChange,
+    }
   };
 }
 
